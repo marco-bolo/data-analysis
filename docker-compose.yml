@@ -1,0 +1,119 @@
+version: "3.7"
+# -----------------------------------------------------------------------
+services: 
+  graphdb:
+    image: ghcr.io/vliz-be-opsci/kgap/kgap_graphdb:latest
+    container_name: mbo_graphdb
+    ports:
+      - 7200:7200     # HTTP
+    volumes:
+      - ./data:/root/graphdb-import/data
+    # todo - think about volumes for persistence of data ?
+    labels:
+      be.vliz.container.project: "MBO"
+      be.vliz.container.group: "services"
+
+  jupyter:
+    image: ghcr.io/vliz-be-opsci/kgap/kgap_jupyter:latest
+    container_name: mbo_jupyter
+    ports:
+      - "8889:8888"
+    links:
+      - graphdb
+    volumes:
+      - "./notebooks:/notebooks"
+      - "./data:/data"
+      - "./config:/config"
+    env_file:
+      - ./.env
+    environment:
+      - GDB_BASE=http://graphdb:7200/
+      - NOTEBOOK_ARGS="--NotebookApp.token=''"
+    labels:
+      be.vliz.container.project: "MBO"
+      be.vliz.container.group: "services"
+      
+  dereferencer:
+    build: 
+      context: ./docker/lwua-dereferencer/ 
+      #args: 
+    image: lwua/dereferencer
+    container_name: mbo_dereferencer
+    depends_on:
+      - graphdb
+    volumes: 
+      - ./data:/data    # Store for any input data 
+      - ./config:/config   # Store for any input data
+      - ./logging:/logging   # Store for any input data 
+    env_file:
+      - ./.env
+    environment:
+      - GDB_BASE=http://graphdb:7200/
+      - INGEST_DATA_FOLDER=/data
+    # for test / dev -- no restart and single run
+    restart: "no"
+    command: run
+    # towards deploy -- make restart and keep service running -- consequence: use ctrl-c to stop
+    # restart: unless-stopped 
+    # command: start
+    links:
+      - graphdb
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m 
+    labels:
+      be.vliz.container.project: "MBO"
+      be.vliz.container.group: "services"
+
+  ingest:
+    build: 
+      context: ./docker/lwua-ingest/ 
+      #args: 
+    image: lwua/lwua_ingest
+    container_name: mbo_ingest
+    depends_on:
+      - graphdb
+    volumes: 
+      - ./data:/data    # Store for any input data 
+      - ./logging:/logging   # Store for any input data 
+    env_file:
+      - ./.env
+    environment:
+      - GDB_BASE=http://graphdb:7200/
+      - INGEST_DATA_FOLDER=/data
+    # for test / dev -- no restart and single run
+    restart: "no"
+    command: run
+    # towards deploy -- make restart and keep service running -- consequence: use ctrl-c to stop
+    # restart: unless-stopped 
+    # command: start
+    links:
+      - graphdb
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m 
+    labels:
+      be.vliz.container.project: "MBO"
+      be.vliz.container.group: "services"
+      be.vliz.container.owner: "laurian.van.maldeghem@vliz.be"
+      be.vliz.container.description: "Marco-Bolo data analysis"
+      be.vliz.container.vcs-url: "https://github.com/lifewatch/user-analysis-2023.git"
+
+  sembench:
+    build:
+      context: ./docker/lwua-sembench/
+    image: lwua/lwua_sembench
+    container_name: mbo_sembench
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    environment:
+      - INPUT_DATA_LOCATION=/data
+      - OUTPUT_DATA_LOCATION=/data
+      - SEMBENCH_DATA_LOCATION=/data/sembench-data
+      - SEMBENCH_CONFIG_PATH=/config/sembench.json
+    labels:
+      be.vliz.container.project: "MBO"
+      be.vliz.container.group: "services"
