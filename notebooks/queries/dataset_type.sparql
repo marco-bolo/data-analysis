@@ -1,0 +1,14 @@
+PREFIX schema: <https://schema.org/>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct: <http://purl.org/dc/terms/>
+SELECT 
+  (?s as ?dataset) 
+  ?title 
+  ?type
+WHERE { 
+	?s a dcat:Dataset .
+    ?s dct:title ?title .
+    OPTIONAL {
+        ?s dct:type ?type . 
+    }
+}

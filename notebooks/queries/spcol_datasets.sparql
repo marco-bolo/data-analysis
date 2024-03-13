@@ -1,7 +1,9 @@
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX dct: <http://purl.org/dc/terms/#>
+PREFIX dct: <http://purl.org/dc/terms/>
 SELECT 
-    (?collection as ?identifier) ?name ?dataset
+    (?collection as ?collection_id) 
+    ?name 
+    ?dataset
 WHERE { 
     ?collection dcat:dataset ?dataset .
     ?collection dct:title ?name .
