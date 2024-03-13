@@ -4,13 +4,13 @@ prefix:
   dcat: <http://www.w3.org/ns/dcat#>
   schema: <https://schema.org/>
   org: <http://www.w3.org/ns/org#>
-  dct: <http://purl.org/dc/terms/#>
+  dct: <http://purl.org/dc/terms/>
   mi: <http://www.marineinfo.org/ns/ontology#>
 assert:
   - subjects:
       literal:
       # spcols retrieved from here: https://vliz.atlassian.net/wiki/spaces/VMDCLOCSVC/pages/20160865/Overview+Special+Collections
-        #- http://dev.marineinfo.org/id/collection/919 # EurOBIS ackn
+        #- http://dev.marineinfo.org/id/collection/919 # EurOBIS ackn 
         #- http://dev.marineinfo.org/id/collection/944 # EUROBIS ackn – direct,
         #- http://dev.marineinfo.org/id/collection/945 # EUROBIS ackn – indirect
         #- http://dev.marineinfo.org/id/collection/619 # available through EurOBIS
@@ -19,6 +19,13 @@ assert:
         - http://dev.marineinfo.org/id/collection/629 # EurOBIS dataproviders
         #- http://dev.marineinfo.org/id/collection/880 # OBIS-cited publications 
     paths:
-      - "dcat:resource / dct:title"
-      - "dcat:dataset / dct:title"
-      - "dcat:dataset / dct:license"
+      - "dcat:resource"
+  - subjects:
+      SPARQL: >
+        PREFIX dcat: <http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+              [] dcat:dataset ?s .
+              }
+    paths:
+      - "dct:title"
