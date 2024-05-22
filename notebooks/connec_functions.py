@@ -4,11 +4,12 @@ from pandas import DataFrame
 import os
 
 # SPARQL EndPoint to use - wrapped as Knowledge-Graph 'source'
-GDB_BASE: str = os.getenv("GDB_BASE", "http://localhost:7200/")
+GDB_BASE: str = os.getenv("GDB_BASE", "http://graphdb:7200/")
 #print(f"{os.getenv('GDB_BASE')=}")
 #print(f"{GDB_BASE=}")
-GDB_REPO: str = os.getenv("GDB_REPO", "lwua23")
+GDB_REPO: str = os.getenv("GDB_REPO", "kgap")
 GDB_ENDPOINT: str = f"{GDB_BASE}repositories/{GDB_REPO}"
+#print(f"{GDB_ENDPOINT=}")
 GDB: KGSource = KGSource.build(GDB_ENDPOINT)
 
 #print(f"{GDB_ENDPOINT=}")

@@ -1,0 +1,20 @@
+{#Template for semantic uplifting of SDG labels#}
+
+{%- if ctrl.isFirst %}
+{%- include 'includes/prefixes.ttl' %}
+{%- endif %}
+
+<{{_.publication}}>
+    osdg:sdg [
+        osdg:identifier "urn:osdg:goal:{{_.sdg}}" ;
+        osdg:label {{_.sdg | xsd("xsd:string") | safe }} ;
+        osdg:relevance {{_.relevance | xsd("xsd:string") | safe }} ;
+        osdg:keywords 
+            {% for name in _.fos_names.split(", ") %}
+            [
+                osdg:name {{name | xsd("xsd:string") | safe }} ; 
+                osdg:identifier "urn:osdg:name:id:{{ _.fos_ids.split(", ")[loop.index0]}}" ; 
+            ]
+            {% if not loop.last %}, {% endif %}{% endfor %} ; 
+    ] ; 
+.

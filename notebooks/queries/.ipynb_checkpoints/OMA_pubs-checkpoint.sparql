@@ -1,0 +1,42 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX schema: <https://schema.org/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX mi: <http://www.marineinfo.org/ns/ontology#>
+
+SELECT DISTINCT 
+    ?collection 
+    ?title 
+    ?publication
+    ?BibType
+    ?BibLvlCode
+    ?OA
+    ?publish_date
+    ?md_created
+    ?md_modified
+
+WHERE { 
+	?collection a <https://schema.org/Collection> .
+    ?collection <http://purl.org/dc/terms/title> ?title .
+    ?collection <http://www.w3.org/ns/dcat#resource> ?publication .
+	?publication a dct:BibliographicResource .   
+    OPTIONAL {
+        ?publication mi:hasBibType ?BibType
+    }
+    OPTIONAL {
+        ?publication mi:hasBibLvlCode ?BibLvlCode
+    }
+    OPTIONAL {
+        ?publication schema:isAccessibleForFree ?OA
+    }
+    OPTIONAL {
+        ?publication schema:datePublished ?publish_date .
+    }
+    OPTIONAL {
+        ?publication dct:created ?md_created .
+    }
+    OPTIONAL {
+        ?publication dct:modified ?md_modified .
+    }
+    
+    FILTER(?collection = <https://marineinfo.org/id/collection/396>) 
+}

@@ -1,0 +1,30 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX schema: <https://schema.org/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX mi: <http://www.marineinfo.org/ns/ontology#>
+
+SELECT DISTINCT 
+    ?collection 
+    ?collection_title 
+    ?dataset
+    ?dataset_title
+    ?license
+    ?DOI
+    ?rights
+WHERE { 
+	?collection a <https://schema.org/Collection> .
+    ?collection <http://purl.org/dc/terms/title> ?collection_title .
+    ?collection <http://www.w3.org/ns/dcat#dataset> ?dataset . 
+    OPTIONAL {
+        ?dataset dct:title ?dataset_title .
+    }
+    OPTIONAL {
+        ?dataset dct:license ?license  .
+    }
+    OPTIONAL {
+        ?dataset dct:identifier ?DOI .
+    }
+    OPTIONAL {
+        ?dataset dct:rights ?rights .    
+    }
+}
